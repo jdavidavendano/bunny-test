@@ -77,7 +77,6 @@ app.get('/', cors(corsOptions), (req, res) => {
         console.error(error);
         
     }
-    console.log('Returning heroes list');
 });
 
 
