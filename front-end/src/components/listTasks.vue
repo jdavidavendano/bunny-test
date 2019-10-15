@@ -118,10 +118,12 @@ export default {
                     }
                 })
                 .then(response => {
-                    this.clearTask();
-                    this.refreshTask();
-                    this.typing = false;
-                    this.fetchTasks();
+                    if(response != null){
+                        this.clearTask();
+                        this.refreshTask();
+                        this.typing = false;
+                        this.fetchTasks();
+                    }
                 })
                 .catch(error => {
                     console.log(error);
@@ -177,7 +179,9 @@ export default {
             
             this.$httpTasks.put(`/${task.id}`, taskUpdated).then(
                 response => {
-                    this.fetchTasks();
+                    if(response != null){
+                        this.fetchTasks();
+                    }
                 }
             ).catch(
                 error => {

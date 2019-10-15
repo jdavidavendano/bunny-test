@@ -2,7 +2,7 @@
     <div>
         <div v-bind:show="users.length>0" class="col align-self-center">
             <!-- section list users -->
-            <div class="form-row align-items-center"v-for="user in users">
+            <div class="form-row align-items-center" v-for="user in users">
                 <div class='inline'>
                     <p class="clickeable" v-on:click="sendDataToBus(user)">{{ user.name }}</p>
                     <b-button @click="showModalUpdateName(user)">Edit user</b-button>
@@ -43,7 +43,6 @@
 </template>
 
 <script>
-import axios from "axios";
 import EventBus from "./../bus.js";
 
 export default {
@@ -87,7 +86,9 @@ export default {
             }
             this.$httpUsers.put(`/${user.id}`, userWithNewName).then(
                 response => {
-                    this.fetchUsers();
+                    if(response != null){
+                        this.fetchUsers();
+                    }
                 }
             ).catch(
                 error => {
@@ -99,7 +100,9 @@ export default {
         deleteUser(id) {
             this.$httpUsers.delete(`/${id}`).then(
                 response => {
-                    this.fetchUsers();
+                    if(response != null){
+                        this.fetchUsers();
+                    }
                 }
             );
         },
@@ -126,7 +129,7 @@ export default {
             return this.newNameForm.split(' ').join('').trim().length > 0;
         },
 
-        resetModal() {;
+        resetModal() {
             this.selectedUser = '';
             this.newNameForm = '';
         },
