@@ -2,6 +2,7 @@
 <template>
   <div class="col align-self-center">
     <h3 class="pb-5 text-left underline">Create user</h3>
+    <!-- form create users -->
     <form class="sign-in" @submit.prevent>
       <div class="form-group todo__row">
         <input
@@ -31,32 +32,36 @@
     methods: {
         addUser(event) {
         if (event) event.preventDefault();
-        let user = {
-            name: this.name
-        };
-        console.log(user);
-        this.$http
-            .post("/", user,{
-            headers: {
-                // remove headers
-                }
-            })
-            .then(response => {
-            this.clearUser();
-            this.refreshUSer();
-            this.typing = false;
-            })
-            .catch(error => {
-            console.log(error);
-            });
+        if(this.name.split(' ').join('').length > 0){
+
+            let user = {
+                name: this.name
+            };
+            this.$httpUsers
+                .post("/", user,{
+                    headers: {
+                        // remove headers
+                    }
+                })
+                .then(response => {
+                    this.clearUser();
+                    this.refreshUser();
+                    this.typing = false;
+                })
+                .catch(error => {
+                    console.log(error);
+                });
+            } else {
+                this.clearUser();
+            }
         },
 
         clearUser() {
-        this.name = "";
+            this.name = "";
         },
 
-        refreshUSer() {
-        bus.$emit("refreshUser");
+        refreshUser() {
+            bus.$emit("refreshUser");
         }
     }
 };

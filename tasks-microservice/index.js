@@ -1,11 +1,11 @@
-/* Users microservice */ 
+/* Tasks microservice */ 
 
 const express = require('express');
 const bodyParser = require('body-parser');
-const port = 3000;      /* Temporarily fixed */
+const port = 3001;      /* Temporarily fixed */
 const app = express();
 const admin = require("firebase-admin");
-const serviceAccount = require("./firebase/bunny-users-31bc3-firebase-adminsdk-ipfk8-091f0a1f2a.json");
+const serviceAccount = require("./firebase/bunny-tasks-firebase-adminsdk-f41lq-3374103695.json");
 const cors = require('cors');
 
 const whitelist = ['http://localhost:8080', 'http://181.135.251.250:8080']
@@ -21,7 +21,7 @@ const corsOptions = {
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
-    databaseURL: "https://bunny-users-31bc3.firebaseio.com",
+    databaseURL: "https://bunny-tasks.firebaseio.com",
     databaseAuthVariableOverride: null
 });
   
@@ -35,45 +35,44 @@ app.use(bodyParser.urlencoded({
 
 app.use(express.json());
 
-app.get('/', cors(corsOptions), (req, res) => {
+app.get('/**', cors(corsOptions), (req, res) => {
     try {
-        let listUsers = {};
-        let collectionUsers = db.collection('users');
-        
-        collectionUsers.get().then(
-            users => {
-                if (users.empty) {
+        let listTasks = {};
+        let collectionTasks = db.collection('tasks');
+        let userIdToQuery = req.params[0];
+
+        collectionTasks.where('user_id', '==', userIdToQuery).get().then(
+            tasks => {
+                if (tasks.empty) {
                     res.status(202).send({});
                     console.log('No matching documents.');
                     return;
                 }  
-                users.forEach(user => {
-                    let userIdTmp = user.id;
-                    let userDataTmp = user.data();
-                    userDataTmp['id'] = user.id;
-                    listUsers[userIdTmp] = userDataTmp;
-                });
-                res.status(202).send(listUsers);
-            }
-        ).catch(err => {
-            res.status(202).send({});
+                tasks.forEach(task => {
+                    let taskIdTmp = task.id;
+                    let taskDataTmp = task.data();
+                    taskDataTmp['id'] = task.id;
+                    listTasks[taskIdTmp] = taskDataTmp;
+            });
+            res.status(202).send(listTasks);
+        }).catch(err => {
             console.log('Error getting documents', err);
         });
     } catch (error) {
-        res.status(202).send({});
         console.error(error);
     }
 });
 
 app.post('/', cors(corsOptions), (req, res) => {
     try {
-        let collectionUsers = db.collection("users");
-        collectionUsers.doc().set({
-            name: req.body.name
-        }).then(function() {
+        let collectionTasks = db.collection("tasks");
+        collectionTasks.doc().set({
+            description: req.body.description,
+            state: req.body.state,
+            user_id: req.body.user_id
+          }).then(function() {
             res.status(202).send(req.body);
-        });
-        console.log(req.body);
+          });
     } catch (error){
         console.error(error);
     }
@@ -81,23 +80,15 @@ app.post('/', cors(corsOptions), (req, res) => {
 
 app.put('/**', cors(corsOptions), (req, res) => {
     try {
-        db.collection('users').doc(req.body.id).update({name: req.body.name})
+        db.collection('tasks').doc(req.body.id).update({
+            description: req.body.description,
+            state: req.body.state,
+            user_id: req.body.user_id
+        })
         res.status(202).send()
     } catch (error) {
         console.error(error);
         res.status(404).send();
-    }
-});
-
-
-app.delete('/**', cors(corsOptions), (req, res) => {
-    try {
-        let userIdToDelete = req.params[0];
-        db.collection('users').doc(userIdToDelete).delete();
-        res.status(200).send();
-    } catch (error) {
-        res.status(204).send();
-        console.error(error);
     }
 });
 

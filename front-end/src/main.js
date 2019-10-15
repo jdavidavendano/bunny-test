@@ -3,11 +3,19 @@ import BootstrapVue from 'bootstrap-vue';
 import axios from 'axios';
 import App from './App.vue';
 
-const http = axios.create({
-  baseURL: process.env.BACKEND_URL ? process.env.BACKEND_URL : 'http://localhost:3000/',
+// Connection with users microservice
+const httpUsers = axios.create({
+  baseURL: process.env.BACKEND_URL ? process.env.BACKEND_URL : 'http://181.135.251.250:3000/',
 });
 
-Vue.prototype.$http = http;
+Vue.prototype.$httpUsers = httpUsers;
+
+// Connection with tasks microservice
+const httpTasks = axios.create({
+  baseURL: process.env.BACKEND_URL ? process.env.BACKEND_URL : 'http://181.135.251.250:3001/',
+});
+
+Vue.prototype.$httpTasks = httpTasks;
 
 Vue.use(BootstrapVue);
 

@@ -4,6 +4,7 @@
       <div class="col-md-6 mx-auto">
         <CreateUser></CreateUser>
         <ListUsers></ListUsers>
+        <ListTasks></ListTasks>
       </div>
     </div>
   </div>
@@ -12,10 +13,12 @@
 <script>
 import CreateUser from "./components/createUser.vue";
 import ListUsers from "./components/listUsers.vue";
+import ListTasks from "./components/listTasks.vue";
+
 
 export default {
   name: "app",
-  components: { CreateUser, ListUsers }
+  components: { CreateUser, ListUsers, ListTasks }
 };
 </script>
 

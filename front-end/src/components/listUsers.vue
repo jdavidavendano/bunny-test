@@ -1,16 +1,17 @@
 <template>
     <div>
         <div v-bind:show="users.length>0" class="col align-self-center">
-            <div class="form-row align-items-center" v-for="user in users">
+            <!-- section list users -->
+            <div class="form-row align-items-center"v-for="user in users">
                 <div class='inline'>
-                    <p>{{ user.name }}</p>
+                    <p class="clickeable" v-on:click="sendDataToBus(user)">{{ user.name }}</p>
                     <b-button @click="showModalUpdateName(user)">Edit user</b-button>
                     <div v-on:click="deleteUser(user.id)" class='delete'>Delete user</div>
                 </div>
             </div>
             <div
             class="alert alert-primary user__row"
-            v-show="users.length==0 && doneLoading"
+            v-show="users.length==0"
             >
                 There are not users.
             </div>
@@ -43,7 +44,7 @@
 
 <script>
 import axios from "axios";
-import bus from "./../bus.js";
+import EventBus from "./../bus.js";
 
 export default {
     data() {
@@ -68,8 +69,13 @@ export default {
         }
     },
     methods: {
+        sendDataToBus(user){
+            // To communicate between templates
+            EventBus.$emit('user-id-to-tasks', {id: user.id, name: user.name});
+        },
+
         fetchUsers() {
-            this.$http.get("/").then(response => {
+            this.$httpUsers.get("/").then(response => {
                 this.users = response.data;
             });
         },
@@ -79,7 +85,7 @@ export default {
                 'id': user.id,
                 'name': newName
             }
-            this.$http.put(`/${user.id}`, userWithNewName).then(
+            this.$httpUsers.put(`/${user.id}`, userWithNewName).then(
                 response => {
                     this.fetchUsers();
                 }
@@ -91,7 +97,7 @@ export default {
         },
 
         deleteUser(id) {
-            this.$http.delete(`/${id}`).then(
+            this.$httpUsers.delete(`/${id}`).then(
                 response => {
                     this.fetchUsers();
                 }
@@ -99,11 +105,12 @@ export default {
         },
 
         listenToEvents() {
-            bus.$on("refreshUser", $event => {
+            EventBus.$on("refreshUser", $event => {
                 this.fetchUsers(); 
             });
         },
 
+        /* Modal things */
         showModalUpdateName(user) {
             this.selectedUser = user;
             this.$root.$emit('bv::show::modal', 'modalUserName', '#btnShow');
@@ -116,7 +123,7 @@ export default {
         },
 
         checkFormValidity() {
-            return this.newNameForm.length > 0;
+            return this.newNameForm.split(' ').join('').trim().length > 0;
         },
 
         resetModal() {;
@@ -187,5 +194,11 @@ export default {
     margin: 0rem 1rem 0.7rem 1rem;
     padding: 0 0.1rem;
     cursor: pointer;
+}
+
+.clickeable {
+    cursor: pointer;
+    text-decoration: underline;
+    color: blue
 }
 </style>
