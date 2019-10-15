@@ -2,7 +2,8 @@
 
 ## What did I use? 
 * Frontend: VueJS
-* Backend: ExpressJS
+* Backend: ExpressJS (both microservices)
+* Database: Firebase (an independent database for each microservice)
 
 ## Wanna see the app working? :)
 [Click to watch the video](https://drive.google.com/file/d/1pXDWDT-dImUF8u_TGKVyf1oAIoDCB_Iv/view?usp=sharing) 
